@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -58,13 +59,15 @@ public class BookService {
             queryBuilder = QueryBuilders.multiMatchQuery(searchInput.getSearchText())
                     .field("name", 3)
                     .field("summary")
-                    .field("authors.name");
+                    .field("authors.name")
+                    .fuzziness(Fuzziness.ONE) //fuzziness means the edit distance: the number of one-character changes that need to be made to one string to make it the same as another string
+                    .prefixLength(2);//The prefix_length parameter is used to improve performance. In this case, we require that the first three characters should match exactly, which reduces the number of possible combinations.;
         }
 
         // filter by author name
         BoolQueryBuilder filterBuilder = boolQuery();
         if(searchInput.getFilter() != null && isNotEmpty(searchInput.getFilter().getAuthorName())){
-            filterBuilder.must(termQuery("authors.name", searchInput.getFilter().getAuthorName()));
+            filterBuilder.must(termQuery("authors.name.raw", searchInput.getFilter().getAuthorName()));
         }
 
         NativeSearchQuery query = new NativeSearchQueryBuilder().withQuery(queryBuilder)

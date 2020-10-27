@@ -41,7 +41,7 @@ class ElasticsearchTest {
         IndexOperations indexOperations = elasticsearchOperations.indexOps(Book.class);
         indexOperations.delete();
         indexOperations.create();
-        indexOperations.createMapping();
+        indexOperations.putMapping(indexOperations.createMapping());
 
 
         // add 2 books to elasticsearch

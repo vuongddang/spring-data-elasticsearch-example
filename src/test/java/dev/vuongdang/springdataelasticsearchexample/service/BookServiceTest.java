@@ -51,7 +51,7 @@ class BookServiceTest {
         IndexOperations indexOperations = elasticsearchOperations.indexOps(Book.class);
         indexOperations.delete();
         indexOperations.create();
-        indexOperations.createMapping();
+        indexOperations.putMapping(indexOperations.createMapping());
 
         // add 2 books to elasticsearch
         Author markTwain = new Author().setId("1").setName("Mark Twain");
@@ -95,13 +95,13 @@ class BookServiceTest {
     void searchBook() {
 
         // Define page request: return the first 10 results. Sort by book's name ASC
-        Pageable pageable = PageRequest.of(0, 10, Direction.ASC, "name.keyword");
+        Pageable pageable = PageRequest.of(0, 10, Direction.ASC, "name.raw");
 
-        // search all books: should return 3 books
+        // Case 1: search all books: should return 3 books
         assertEquals(3, bookService.searchBooks(new BookSearchInput(), pageable)
                 .getTotalElements());
 
-        // filter books by author Mark Twain: Should return [book2, book1]
+        // Case 2: filter books by author Mark Twain: Should return [book2, book1]
         SearchPage<Book> booksByAuthor = bookService.searchBooks(
                 new BookSearchInput().setFilter(new BookFilter().setAuthorName("Mark Twain")),
                 pageable); // sort by book name asc
@@ -112,9 +112,10 @@ class BookServiceTest {
         assertEquals(book1, iterator.next().getContent()); // The Mysterious Stranger
 
 
-        // search by text 'special': Should return book 2 because it has summary containing 'special'
+        // Case 3: search by text 'special': Should return book 2 because it has summary containing 'special'
+        // one typo in the search text: (specila) is accepted thanks to `fuziness`
         SearchPage<Book> specialBook = bookService
-                .searchBooks(new BookSearchInput().setSearchText("special"), pageable);// book 2
+                .searchBooks(new BookSearchInput().setSearchText("specila"), pageable);// book 2
         assertEquals(1, specialBook.getTotalElements());
 
         assertEquals(book2, specialBook.getContent().iterator().next().getContent()); // The Innocents Abroad

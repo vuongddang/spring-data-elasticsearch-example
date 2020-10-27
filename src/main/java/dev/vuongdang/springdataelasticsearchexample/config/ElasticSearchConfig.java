@@ -28,9 +28,18 @@ public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
     @Bean
     public RestHighLevelClient elasticsearchClient() {
 
+        // Connect to elastic search locally
         final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
                 .connectedTo("localhost:9200")
                 .build();
+
+        /*
+        // Connect to elastic search in https://app.bonsai.io/
+        final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+                .connectedTo("sass-testing-1537538524.eu-central-1.bonsaisearch.net:443")
+                .usingSsl()
+                .withBasicAuth("<username>", "<password>")
+                .build();*/
 
         return RestClients.create(clientConfiguration).rest();
     }

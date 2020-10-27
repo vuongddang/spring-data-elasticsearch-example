@@ -20,6 +20,11 @@ public class Author {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text)
+    @MultiField(
+        mainField = @Field(type = FieldType.Text, fielddata = true),
+        otherFields = {
+                @InnerField(suffix = "raw", type = FieldType.Keyword)
+        }
+    )
     private String name;
 }
