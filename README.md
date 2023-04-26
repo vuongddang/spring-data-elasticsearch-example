@@ -8,5 +8,5 @@ Example project on how to work with Spring Data Elasticsearch
 - Search, Filter and Sort using Spring Data Elasticsearch
 
 
-[Original blog post](https://vuongdang.dev/blog/getting-started-with-spring-data-elasticsearch)
+[Original blog post](https://vuongdang.dev/articles/getting-started-with-spring-data-elasticsearch)
 
